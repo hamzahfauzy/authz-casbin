@@ -71,6 +71,12 @@ func (m *Middleware) Require(
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "authorization error",
+				"data": {
+					"uuid" : userUUID.String(),
+					"guard": guard,
+					"object" :object,
+					"action": action,
+				}
 			})
 			c.Abort()
 			return

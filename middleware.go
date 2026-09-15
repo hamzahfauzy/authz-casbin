@@ -2,9 +2,7 @@ package auth
 
 import (
 	"net/http"
-
 	"github.com/gin-gonic/gin"
-	"github.com/turahe/pkg/jwt"
 	pkgResponse "github.com/turahe/pkg/response"
 )
 
@@ -24,9 +22,7 @@ func (m *Middleware) Require(
 ) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-
-		// Get current user from JWT
-		userUUID, ok := jwt.GetCurrentUserUUID(c)
+		userUUID, ok := c.Get("uuid")
 
 		if !ok {
 			pkgResponse.UnauthorizedError(
@@ -62,7 +58,7 @@ func (m *Middleware) Require(
 
 		// Check permission using Casbin
 		allowed, err := m.enforcer.Enforce(
-			userUUID.String(),
+			userUUID,
 			guard,
 			object,
 			action,
@@ -71,12 +67,7 @@ func (m *Middleware) Require(
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "authorization error",
-				"data": {
-					"uuid" : userUUID.String(),
-					"guard": guard,
-					"object" :object,
-					"action": action,
-				}
+				"data": gin.H{ "uuid": userUUID, "guard": guard, "object": object, "action": action, },
 			})
 			c.Abort()
 			return
@@ -86,6 +77,7 @@ func (m *Middleware) Require(
 		if !allowed {
 			c.JSON(http.StatusForbidden, gin.H{
 				"message": "permission denied",
+				"data": gin.H{ "uuid": userUUID, "guard": guard, "object": object, "action": action, },
 			})
 			c.Abort()
 			return

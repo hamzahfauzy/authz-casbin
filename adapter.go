@@ -53,6 +53,8 @@ func (a *DatabaseAdapter) LoadPolicy(
 		)
 	}
 
+	fmt.Println("casbin policy loaded")
+
 	for _, rule := range rules {
 
 		line := rule.Ptype

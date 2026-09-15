@@ -35,6 +35,8 @@ func NewEnforcer(
 		)
 	}
 
+	fmt.Println("Database connected")
+
 	adapter := NewDatabaseAdapter(db)
 
 	modelBytes, err := modelFS.ReadFile("model.conf",)
@@ -45,6 +47,8 @@ func NewEnforcer(
 		err,
 	)
 	}
+
+	fmt.Println("casbin model read success")
 
 	casbinModel, err := model.NewModelFromString(
 		string(modelBytes),

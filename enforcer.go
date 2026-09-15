@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-//go:embed model/rbac_model.conf
+//go:embed model.conf
 var modelFS embed.FS
 
 type Enforcer struct {

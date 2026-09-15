@@ -3,8 +3,6 @@ package auth
 import (
 	"context"
 	"log"
-
-	authz "github.com/hamzahfauzy/authz-casbin"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -13,7 +11,7 @@ const PolicyReloadChannel = "casbin.policy.reload"
 func StartReloadListener(
 	ctx context.Context,
 	redisClient *redis.Client,
-	enforcer *authz.Enforcer,
+	enforcer *Enforcer,
 ) {
 
 	pubsub := redisClient.Subscribe(

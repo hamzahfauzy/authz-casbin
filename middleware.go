@@ -22,7 +22,7 @@ func (m *Middleware) Require(
 ) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		userUUID, ok := c.Get("uuid")
+		user_id, ok := c.Get("user_id")
 
 		if !ok {
 			pkgResponse.UnauthorizedError(
@@ -56,9 +56,9 @@ func (m *Middleware) Require(
 			return
 		}
 
-		uuid, good := userUUID.(string)
+		userId, good := user_id.(string)
 
-		if !good || uuid == "" {
+		if !good || userId == "" {
 			pkgResponse.UnauthorizedError(
 				c,
 				"authentication context invalid",
@@ -69,7 +69,7 @@ func (m *Middleware) Require(
 
 		// Check permission using Casbin
 		allowed, err := m.enforcer.Enforce(
-			uuid,
+			userId,
 			guard,
 			object,
 			action,

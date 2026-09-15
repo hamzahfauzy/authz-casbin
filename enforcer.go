@@ -20,13 +20,8 @@ type Enforcer struct {
 }
 
 func NewEnforcer(
-	dsn string,
+	db gorm.DB,
 ) (*Enforcer, error) {
-
-	db, err := gorm.Open(
-		mysql.Open(dsn),
-		&gorm.Config{},
-	)
 
 	if err != nil {
 		return nil, fmt.Errorf(

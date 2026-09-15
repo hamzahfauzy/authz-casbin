@@ -1,8 +1,6 @@
 package auth
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/turahe/pkg/jwt"
 	pkgResponse "github.com/turahe/pkg/response"
@@ -33,16 +31,24 @@ func (m *Middleware) Require(
 			return
 		}
 
-		guard := c.Get("actor_type")
+		guardValue, exists := c.Get("actor_type")
 
-		if guard == "" {
+		if !exists {
 			pkgResponse.UnauthorizedError(c, "authentication context missing")
 			c.Abort()
 			return
 		}
 
+		guard, ok := guardValue.(string)
+
+		if !ok || guard == "" {
+			pkgResponse.UnauthorizedError(c, "authentication context invalid")
+			c.Abort()
+			return
+		}
+
 		allowed, err := m.enforcer.Enforce(
-			userUUID,
+			userUUID.String(),
 			guard,
 			object,
 			action,

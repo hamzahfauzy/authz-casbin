@@ -7,7 +7,7 @@ import (
 
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
-	"gorm.io/driver/mysql"
+	// "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -20,15 +20,8 @@ type Enforcer struct {
 }
 
 func NewEnforcer(
-	db gorm.DB,
+	db *gorm.DB,
 ) (*Enforcer, error) {
-
-	if err != nil {
-		return nil, fmt.Errorf(
-			"connect database: %w",
-			err,
-		)
-	}
 
 	fmt.Println("Database connected")
 

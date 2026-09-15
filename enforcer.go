@@ -23,8 +23,6 @@ func NewEnforcer(
 	db *gorm.DB,
 ) (*Enforcer, error) {
 
-	fmt.Println("Database connected")
-
 	adapter := NewDatabaseAdapter(db)
 
 	modelBytes, err := modelFS.ReadFile("model.conf",)

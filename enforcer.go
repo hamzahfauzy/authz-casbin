@@ -7,7 +7,6 @@ import (
 
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
-	// "gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 

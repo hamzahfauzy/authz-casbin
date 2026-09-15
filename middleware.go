@@ -78,7 +78,7 @@ func (m *Middleware) Require(
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"message": "authorization error",
-				"data": gin.H{ "uuid": userUUID, "guard": guard, "object": object, "action": action, },
+				"data": gin.H{ "userId": userId, "guard": guard, "object": object, "action": action, },
 			})
 			c.Abort()
 			return
@@ -88,7 +88,7 @@ func (m *Middleware) Require(
 		if !allowed {
 			c.JSON(http.StatusForbidden, gin.H{
 				"message": "permission denied",
-				"data": gin.H{ "uuid": userUUID, "guard": guard, "object": object, "action": action, },
+				"data": gin.H{ "userId": userId, "guard": guard, "object": object, "action": action, },
 			})
 			c.Abort()
 			return

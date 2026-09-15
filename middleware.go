@@ -89,7 +89,6 @@ func (m *Middleware) Require(
 		if !allowed {
 			c.JSON(http.StatusForbidden, gin.H{
 				"message": "permission denied",
-				"error":   err.Error(),
 				"data": gin.H{ "userId": userId, "guard": guard, "object": object, "action": action, },
 			})
 			c.Abort()

@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/turahe/pkg/jwt"
 	pkgResponse "github.com/turahe/pkg/response"
@@ -23,30 +25,42 @@ func (m *Middleware) Require(
 
 	return func(c *gin.Context) {
 
+		// Get current user from JWT
 		userUUID, ok := jwt.GetCurrentUserUUID(c)
 
 		if !ok {
-			pkgResponse.UnauthorizedError(c, "authentication required")
+			pkgResponse.UnauthorizedError(
+				c,
+				"authentication required",
+			)
 			c.Abort()
 			return
 		}
 
-		guardValue, exists := c.Get("actor_type")
+		// Get actor type / guard
+		actorTypeValue, exists := c.Get("actor_type")
 
 		if !exists {
-			pkgResponse.UnauthorizedError(c, "authentication context missing")
+			pkgResponse.UnauthorizedError(
+				c,
+				"authentication context missing",
+			)
 			c.Abort()
 			return
 		}
 
-		guard, ok := guardValue.(string)
+		guard, ok := actorTypeValue.(string)
 
 		if !ok || guard == "" {
-			pkgResponse.UnauthorizedError(c, "authentication context invalid")
+			pkgResponse.UnauthorizedError(
+				c,
+				"authentication context invalid",
+			)
 			c.Abort()
 			return
 		}
 
+		// Check permission using Casbin
 		allowed, err := m.enforcer.Enforce(
 			userUUID.String(),
 			guard,
@@ -55,13 +69,18 @@ func (m *Middleware) Require(
 		)
 
 		if err != nil {
-			pkgResponse.UnauthorizedError(c, "authorization error")
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"message": "authorization error",
+			})
 			c.Abort()
 			return
 		}
 
+		// Permission denied
 		if !allowed {
-			pkgResponse.UnauthorizedError(c, "permission denied")
+			c.JSON(http.StatusForbidden, gin.H{
+				"message": "permission denied",
+			})
 			c.Abort()
 			return
 		}

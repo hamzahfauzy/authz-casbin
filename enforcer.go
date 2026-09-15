@@ -1,5 +1,4 @@
-
-package auth
+package authz
 
 import (
 	"embed"
@@ -8,7 +7,6 @@ import (
 
 	"github.com/casbin/casbin/v2"
 	"github.com/casbin/casbin/v2/model"
-	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -25,7 +23,6 @@ func NewEnforcer(
 	dsn string,
 ) (*Enforcer, error) {
 
-	// Koneksi database
 	db, err := gorm.Open(
 		mysql.Open(dsn),
 		&gorm.Config{},
@@ -38,56 +35,42 @@ func NewEnforcer(
 		)
 	}
 
-	// Buat tabel Casbin jika belum ada
-	adapter, err := gormadapter.NewAdapterByDB(
-		db,
-	)
+	adapter := NewDatabaseAdapter(db)
+
+	modelBytes, err := modelFS.ReadFile("model.conf",)
 
 	if err != nil {
 		return nil, fmt.Errorf(
-			"create casbin adapter: %w",
-			err,
-		)
-	}
-
-	// Load model dari embed
-	modelBytes, err := modelFS.ReadFile(
-		"model.conf",
+		"read casbin model: %w",
+		err,
 	)
-
-	if err != nil {
-		return nil, fmt.Errorf(
-			"read casbin model: %w",
-			err,
-		)
 	}
 
-	m, err := model.NewModelFromString(
+	casbinModel, err := model.NewModelFromString(
 		string(modelBytes),
 	)
 
 	if err != nil {
 		return nil, fmt.Errorf(
-			"load casbin model: %w",
+			"create casbin model: %w",
 			err,
 		)
 	}
 
-	// Buat Enforcer
-	e, err := casbin.NewEnforcer(
-		m,
+	enforcer, err := casbin.NewEnforcer(
+		casbinModel,
 		adapter,
 	)
 
 	if err != nil {
 		return nil, fmt.Errorf(
-			"create enforcer: %w",
+			"create casbin enforcer: %w",
 			err,
 		)
 	}
 
 	return &Enforcer{
-		enforcer: e,
+		enforcer: enforcer,
 	}, nil
 }
 

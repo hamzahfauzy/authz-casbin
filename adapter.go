@@ -53,7 +53,7 @@ func (a *DatabaseAdapter) LoadPolicy(
 		)
 	}
 
-	fmt.Println("casbin policy loaded")
+	fmt.Printf( "casbin policy loaded: %d rules\n", len(rules), )
 
 	for _, rule := range rules {
 

@@ -86,6 +86,13 @@ func (e *Enforcer) LoadPolicy() error {
 	return e.enforcer.LoadPolicy()
 }
 
+func (e *Enforcer) GetPolicy() ([][]string, error) {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
+	return e.enforcer.GetPolicy()
+}
+
 func (e *Enforcer) Enforce(
 	subject string,
 	guard string,

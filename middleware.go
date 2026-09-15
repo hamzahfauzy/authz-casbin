@@ -56,9 +56,20 @@ func (m *Middleware) Require(
 			return
 		}
 
+		uuid, good := userUUID.(string)
+
+		if !good || uuid == "" {
+			pkgResponse.UnauthorizedError(
+				c,
+				"authentication context invalid",
+			)
+			c.Abort()
+			return
+		}
+
 		// Check permission using Casbin
 		allowed, err := m.enforcer.Enforce(
-			userUUID.String(),
+			uuid,
 			guard,
 			object,
 			action,

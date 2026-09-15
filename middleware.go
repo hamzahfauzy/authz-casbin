@@ -58,7 +58,7 @@ func (m *Middleware) Require(
 
 		// Check permission using Casbin
 		allowed, err := m.enforcer.Enforce(
-			userUUID,
+			userUUID.String(),
 			guard,
 			object,
 			action,

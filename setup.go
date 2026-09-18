@@ -1,4 +1,4 @@
-package authz
+package auth
 
 import (
 	"context"
@@ -14,7 +14,7 @@ func SetupAuthorization(
 	db *gorm.DB,
 	redisClient *redis.Client,
 ) (*Middleware, error) {
-	
+
 	enforcer, err := NewEnforcer(
 		db.WithContext(ctx),
 	)
